@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 4.0.3)
 
 add_library(CXX_FLAGS INTERFACE)
 

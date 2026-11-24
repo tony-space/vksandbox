@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project(host LANGUAGES CXX)
 
+find_package(Vulkan REQUIRED)
+
 set(SRC
 	main.cpp
 	pch.hpp
@@ -16,4 +18,4 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED true)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE CXX_FLAGS)
+target_link_libraries(${PROJECT_NAME} PRIVATE CXX_FLAGS glfw glm::glm Vulkan::Vulkan)
