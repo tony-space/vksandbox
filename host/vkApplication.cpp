@@ -1,5 +1,52 @@
 #include "vkApplication.hpp"
 
+#include <algorithm>
+#include <iostream>
+#include <stdexcept>
+#include <string_view>
+#include <vector>
+
+static const char* kValidationLayers[] { "VK_LAYER_KHRONOS_validation" };
+
+static void debugPrintExtensions()
+{
+	try
+	{
+		VkResult vkResult;
+
+		uint32_t extensionCount = 0;
+		vkResult = vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		assert(vkResult == VK_SUCCESS);
+
+		std::vector<VkExtensionProperties> extensions(extensionCount);
+		vkResult = vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+		assert(vkResult == VK_SUCCESS);
+
+		for (const VkExtensionProperties& prop : extensions)
+		{
+			std::cout << prop.extensionName << " : " << prop.specVersion << '\n';
+		}
+	}
+	catch (const std::exception& ex)
+	{
+		std::cerr << ex.what() << '\n';
+	}
+}
+
+static bool checkValidationLayerSupport()
+{
+	uint32_t layerCount;
+	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+	std::vector<VkLayerProperties> availableLayers(layerCount);
+	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+	return std::any_of(availableLayers.begin(), availableLayers.end(), [](const VkLayerProperties& layer)
+	{
+		return layer.layerName == std::string_view{ kValidationLayers[0]};
+	});
+}
+
 static void fillGlfwRequiredInstanceExtensions(VkInstanceCreateInfo& createInfo)
 {
 	uint32_t glfwExtensionCount = 0;
@@ -26,8 +73,18 @@ static VkInstance makeVulkanInstance()
 	createInfo.pNext = nullptr;
 	createInfo.flags = 0;
 	createInfo.pApplicationInfo = &appInfo;
+
 	createInfo.enabledLayerCount = 0;
 	createInfo.ppEnabledLayerNames = nullptr;
+	if constexpr (vkApplication::kDebugBuild)
+	{
+		if (checkValidationLayerSupport())
+		{
+			createInfo.enabledLayerCount = 1;
+			createInfo.ppEnabledLayerNames = kValidationLayers;
+		}
+	}
+
 	fillGlfwRequiredInstanceExtensions(createInfo);
 
 	VkInstance vkInstance;
@@ -43,6 +100,8 @@ static VkInstance makeVulkanInstance()
 
 vkApplication::vkApplication()
 {
+	debugPrintExtensions();
+
 	auto glfwStatus = glfwInit();
 	assert(glfwStatus == GLFW_TRUE);
 	if (glfwStatus != GLFW_TRUE)

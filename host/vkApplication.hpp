@@ -6,6 +6,15 @@
 class vkApplication
 {
 public:
+#ifdef NDEBUG
+	static constexpr bool kDebugBuild = false;
+#else
+	static constexpr bool kDebugBuild = true;
+#endif // NDEBUG
+	static constexpr int kWidth = 800;
+	static constexpr int kHeight = 600;
+
+
 	vkApplication();
 	~vkApplication();
 	
