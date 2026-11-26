@@ -5,8 +5,11 @@ project(host LANGUAGES CXX)
 find_package(Vulkan REQUIRED)
 
 set(SRC
+	glm.hpp
 	main.cpp
 	pch.hpp
+	vkApplication.hpp
+	vkApplication.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SRC})
