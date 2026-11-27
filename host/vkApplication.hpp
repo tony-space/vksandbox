@@ -22,4 +22,6 @@ public:
 private:
 	GLFWwindow* _window;
 	VkInstance _vkInstance;
+	VkPhysicalDevice _vkPhysDevice;
+	VkDevice _vkDevice;
 };
